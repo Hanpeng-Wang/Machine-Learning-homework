@@ -5,7 +5,7 @@ import optmodule as opt
 
 
 
-data = np.loadtxt('D:\Machine-Learning-homework\machine-learning-ex1\ex1\ex1data2.txt', delimiter=',')
+data = np.loadtxt('/Users/hanpengwang/Documents/Machine-Learning-homework/machine-learning-ex1/ex1/ex1data2.txt', delimiter=',')
 X = data[:,0:2]; y = data[:, 2]
 m = len(y)
 ## ================ normalize feature ================

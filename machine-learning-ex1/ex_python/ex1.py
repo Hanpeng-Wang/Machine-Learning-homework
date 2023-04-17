@@ -12,7 +12,7 @@ def plotData(x, y, format, size=1):
 
 ## ======================= Part 2: Plotting =======================
 print('Plotting Data ...\n')
-data = np.loadtxt('D:\Machine-Learning-homework\machine-learning-ex1\ex1\ex1data1.txt', delimiter=',')
+data = np.loadtxt('/Users/hanpengwang/Documents/Machine-Learning-homework/machine-learning-ex1/ex1/ex1data1.txt', delimiter=',')
 X = data[:,0]; y = data[:, 1]
 plotData(X, y, 'xr', 10)
 m = len(y)
