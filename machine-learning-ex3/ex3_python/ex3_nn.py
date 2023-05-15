@@ -4,8 +4,6 @@ from scipy.optimize import minimize
 import scipy.io as io
 import optmodule as opt
 
-
-
 def displayData(X, *width):
 
     m = X.shape[0]
@@ -47,69 +45,43 @@ def displayData(X, *width):
     plt.show()
 
 
-def oneVsAll(X, y, num_labels, lamda):
-
-    m = X.shape[0]
-    n = X.shape[1]
-    all_theta = np.zeros((num_labels, n+1))
-    X = np.column_stack((np.ones((m,)),X))
-
-    initial_theta = np.zeros((n+1,))
-    myoptions={"disp": True,
-             "maxiter": 50}
-    for i in range(num_labels):
-        y_t = (y == (i+1))
-        res = minimize(opt.costFunctionReg, initial_theta, method='BFGS', jac=True, args=(X, y_t, lamda), 
-                options=myoptions)
-        all_theta[i, :] = res.x
-
-    return all_theta
-
-
-def predictOneVsAll(all_theta, X):
-
+def predict(Theta1, Theta2, X):
+    # feedforward predict
     m = X.shape[0]
     X = np.column_stack((np.ones((m,)),X))
 
-    h = opt.sigmoid(np.matmul(X, np.transpose(all_theta)))
+    a2 = opt.sigmoid(np.matmul(X, np.transpose(Theta1)))
+    a2 = np.column_stack((np.ones((m,)),a2))
 
-    p = np.argmax(h, axis=1) + 1
+    a3 = opt.sigmoid(np.matmul(a2, np.transpose(Theta2)))
+
+    p = np.argmax(a3, axis=1) + 1
     return p
     
-    
 
 
-## =========== Loading and Visualizing Data =============
+
+
+input_layer_size  = 400;  # 20x20 Input Images of Digits
+hidden_layer_size = 25;   # 25 hidden units
+num_labels = 10;          # 10 labels, from 1 to 10   
+
+## =========== Part 1: Loading and Visualizing Data =============
 mat = io.loadmat('/Users/hanpengwang/Documents/Machine-Learning-homework/machine-learning-ex3/ex3/ex3data1.mat')
-print(type(mat))
 X =  mat['X']
 y = mat['y']
 y = np.squeeze(y)
+
 rand_indices = np.random.permutation(X.shape[0])
 sel = X[rand_indices[0:100], :]
+# displayData(sel)
 
-
-displayData(sel)
-
-## ============ Part 2a: Vectorize Logistic Regression ============
-theta_t = np.array([-2., -1., 1., 2.])
-X_t = np.column_stack((np.ones((5,)), np.transpose(np.arange(1, 16).reshape((3,5))/10)))
-y_t = (np.array([1,0,1,0,1]) >=0.5)
-lambda_t = 3
-J, grad = opt.costFunctionReg(theta_t, X_t, y_t, lambda_t)
-
-print("Cost: "+ np.array2string(J))
-print("Expected cost: 2.534819")
-print("Gradients:" + np.array2string(grad))
-print("Expected gradients:[0.146561 -0.548558  0.724722 1.398003]")
-
-## ============ Part 2b: One-vs-All Training ============
-lambda_t = 0.1
-num_labels = 10
-all_theta = oneVsAll(X, y, num_labels, lambda_t)
-pred = predictOneVsAll(all_theta, X)
+## ================ Part 2: Loading Pameters ================
+weights = io.loadmat('/Users/hanpengwang/Documents/Machine-Learning-homework/machine-learning-ex3/ex3/ex3weights.mat')
+Theta1= weights['Theta1']
+Theta2= weights['Theta2']
+pred = predict(Theta1, Theta2, X)
 
 comparison = pred == y
 accuracy = np.mean(comparison.astype('float64'))
 print("Train Accuracy: " + np.array2string(accuracy * 100))
-
